@@ -39,14 +39,52 @@ Java：最长回文子串
 public class P5LongestPalindromicSubstring {
     public static void main(String[] args) {
         Solution solution = new P5LongestPalindromicSubstring().new Solution();
-        // TO TEST
-        solution.longestPalindrome("babad");
+        // TO TEST arr[0][2] arr[1][3]
+        solution.longestPalindrome("aacabdkacaa");
     }
 
     //leetcode submit region begin(Prohibit modification and deletion)
     class Solution {
         public String longestPalindrome(String s) {
-            return longestPalindrome_(s);
+            return longestPalindrome_2(s);
+        }
+
+        /**
+         * 动态规划
+         * 重点： indexSegment[l + 1][r - 1]
+         * 过程中将符合条件回文角标一步步向上叠起
+         *
+         * @param s
+         * @return
+         */
+        public String longestPalindrome_2(String s) {
+            if (s.length() == 1) {
+                return s;
+            }
+            //定义一个二维数组，两个角标位置确定从角标i到角标j的数据是否为符合要求
+            char[] chars = s.toCharArray();
+            boolean[][] indexSegment = new boolean[chars.length][chars.length];
+            int start = 0;
+            int end = 0;
+            int maxLen = 0;
+            for (int r = 0; r < chars.length; r++) {
+                for (int l = 0; l < r; l++) {
+                    //两个角标指向的值相等 + 比较回文 当角标之间只有一个数据或者两个数据一定为回文；角标大于2时，向内判断是否有回文 判断 chars[l + 1] == chars[r - 1]
+                    if (chars[l] == chars[r] && (r - l <= 2 || indexSegment[l + 1][r - 1])) {
+                        //将符合回文的标记存入空间中，可用于下一次外围数据向内的判断
+                        indexSegment[l][r] = true;
+                        if (r - l + 1 > maxLen) {
+                            //记录最大长度
+                            maxLen = r - l + 1;
+                            //记录最大长度时开始和结束角标的位置
+                            start = l;
+                            end = r;
+                        }
+                    }
+                }
+            }
+            //循环结束时，使用起点和终点截取的字符串就是符合条件的回文串
+            return s.substring(start, end + 1);
         }
 
         /**
