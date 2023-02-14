@@ -66,24 +66,24 @@ public class P122BestTimeToBuyAndSellStockIi {
          * @return
          */
         public int maxProfit_(int[] prices) {
-            //定义一个记录过程中利润
             int length = prices.length;
-            int[][] indexSegment = new int[length][2];
-            //第一天未持有股票时的收益
-            indexSegment[0][0] = 0;
-            //第一天持有股票时的收益
-            indexSegment[0][1] = -prices[0];
+            //利润
+            int[][] profitSegment = new int[length][2];
 
-            //中间的利润存储
-            for (int i = 1; i < length; i++) {
-                //第i + 1天购卖出股票的最大收益 前一天的收益+今日的价格 和前一天不买股票的最大值
-                indexSegment[i][0] = Math.max(indexSegment[i - 1][0], indexSegment[i - 1][1] + prices[i]);
-                //第i + 1天持有的最大收益
-                indexSegment[i][1] = Math.max(indexSegment[i - 1][1], indexSegment[i - 1][0] - prices[i]);
+            //第0天时持有的利润
+            profitSegment[0][1] = -prices[0];
+            //第0天时不持有的利润
+            profitSegment[0][0] = 0;
+
+            for (int i = 1; i < prices.length; i++) {
+                //第i天时持有的最大利润 = (第 i - 1 天处于持有状态的收益) 和 (第 i - 1 天处于未持有买入状态然后买入的收益) 的较大值
+                profitSegment[i][1] = Math.max(profitSegment[i - 1][1], profitSegment[i - 1][0] - prices[i]);
+                //第i天不持有的最大利润 = (第 i - 1 天处于未持有状态的收益) 和 (第 i - 1 天处于持有买入状态然后卖出的收益) 的较大值
+                profitSegment[i][0] = Math.max(profitSegment[i - 1][0], profitSegment[i - 1][1] + prices[i]);
             }
 
-            //循环结束，获取最后一天卖出的收益
-            return indexSegment[length - 1][0];
+            //返回最后一天卖出状态的收益
+            return profitSegment[length - 1][0];
         }
 
     }
