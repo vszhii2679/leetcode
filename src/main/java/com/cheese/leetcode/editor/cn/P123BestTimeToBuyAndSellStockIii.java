@@ -72,22 +72,29 @@ public class P123BestTimeToBuyAndSellStockIii {
          * 动态规划：求最优解的一种思想，需要将过程中的状态记录下来
          * <p>
          * 状态：时间、购买状态
+         * 状态转移：
+         *  第一次买入：记录当前轮次第一次买入后的利润值 buy1: n- > max(-price[n], -price[n-1])
+         *  第一次卖出：记录当前轮次第一次卖出后的利润值 sell1: n -> max(price[n] + buy1(n), price[n-1] + buy1(n-1))
+         *  第二次买入：记录当前轮次第二次买入后的利润值 buy2: n -> max(sell1(n) - price[n], sell1(n-1) - price[n-1])
+         *  第二次卖出：记录当前轮次第二次买入后的利润值 sell2: n -> max(price[n] + buy2[n], price[n-1] + buy2(n-1))
          *
          * @param prices
          * @return
          */
         public int maxProfit_(int[] prices) {
-            int buy1 = prices[0], sell1 = 0;
-            int buy2 = prices[0], sell2 = 0;
+            //记录几个端点的利润，第一次购买，第一次卖出，第二次购买，第二次卖出，默认售出事件收益为0
+            int buy1 = -prices[0], sell1 = 0;
+            int buy2 = -prices[0], sell2 = 0;
+            //过程中每一次抉择都进行利润最大的选择
             for (int i = 1; i < prices.length; i++) {
-                //购入点取最小值
-                buy1 = Math.min(buy1, prices[i]);
-                //售出点取最大值
-                sell1 = Math.max(sell1, prices[i] - buy1);
-                //二次购买时购买价格取最小值 若price[i]越小，sell1 - prices[i] 越大 也就是利润越大
-                buy2 = Math.min(buy2, -(sell1 - prices[i]));
-                //第二次卖出的利润 = price[sell1] + price[sell2] - price[buy1] - price[buy2]
-                sell2 = Math.max(sell2, prices[i] - buy2);
+                //第一次购物时，选当前利润最大的值
+                buy1 = Math.max(buy1, - prices[i]);
+                //第一次卖出时，选择当前利润最大的值，卖出直接把当前价格作为收益加到上一轮的收益中
+                sell1 = Math.max(sell1, prices[i] + buy1);
+                //第二次购买时，选择当前利润最大的值
+                buy2 = Math.max(buy2, sell1 - prices[i]);
+                //第二次卖出时，选择当前利润最大的值，卖出直接把当前价格作为收益加到上一轮的收益中
+                sell2 = Math.max(sell2, prices[i] + buy2);
             }
             return sell2;
         }
