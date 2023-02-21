@@ -63,6 +63,7 @@ public class P876MiddleOfTheLinkedList {
 
         /**
          * 快慢指针
+         *
          * pb指针运行的速度为pa的两倍
          * 当pb或 pb.next指向null时，此时pa指向的位置就是链表的中点
          *
